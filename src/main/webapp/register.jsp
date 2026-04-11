@@ -1,21 +1,30 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
-    String error      = (String) request.getAttribute("error");
-    String emailValue = (String) request.getAttribute("email");
+    String error = (String) request.getAttribute("error");
+    com.learninglog.learninglogproject.user.model.User user =
+            (com.learninglog.learninglogproject.user.model.User) request.getAttribute("user");
+
+    String usernameValue = "";
+    String emailValue = "";
+
+    if (user != null) {
+        usernameValue = user.getUsername() != null ? user.getUsername() : "";
+        emailValue    = user.getEmail()    != null ? user.getEmail()    : "";
+    }
 %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
+    <title>Register</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
 
 <div class="w-full max-w-md">
 
-    <%-- Brand --%>
+    <%-- Logo / Brand --%>
     <div class="text-center mb-8">
         <div class="inline-flex items-center justify-center w-12 h-12 bg-indigo-600 rounded-xl mb-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none"
@@ -25,13 +34,12 @@
             </svg>
         </div>
         <h1 class="text-2xl font-bold text-gray-800">Learning Log</h1>
-        <p class="text-gray-500 text-sm mt-1">Welcome back! Sign in to continue</p>
+        <p class="text-gray-500 text-sm mt-1">Create your account to get started</p>
     </div>
 
     <%-- Card --%>
     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
 
-        <%-- Error alert --%>
         <% if (error != null) { %>
         <div class="mb-5 flex items-start gap-3 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mt-0.5 shrink-0" fill="none"
@@ -43,7 +51,28 @@
         </div>
         <% } %>
 
-        <form action="login" method="post" class="space-y-5">
+        <form action="register" method="post" class="space-y-5">
+
+            <%-- Username --%>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+                             viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                  d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0zM12 14a7 7 0 0 0-7 7h14a7 7 0 0 0-7-7z"></path>
+                        </svg>
+                    </span>
+                    <input
+                            type="text"
+                            name="username"
+                            required
+                            placeholder="e.g. john_doe"
+                            value="<%= usernameValue %>"
+                            class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
+                </div>
+            </div>
 
             <%-- Email --%>
             <div>
@@ -61,17 +90,14 @@
                             name="email"
                             required
                             placeholder="you@example.com"
-                            value="<%= emailValue != null ? emailValue : "" %>"
+                            value="<%= emailValue %>"
                             class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
                 </div>
             </div>
 
             <%-- Password --%>
             <div>
-                <div class="flex items-center justify-between mb-1">
-                    <label class="block text-sm font-medium text-gray-700">Password</label>
-                    <a href="forgot-password" class="text-xs text-indigo-600 hover:underline">Forgot password?</a>
-                </div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
                 <div class="relative">
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
@@ -85,8 +111,9 @@
                             name="password"
                             id="password"
                             required
-                            placeholder="Enter your password"
+                            placeholder="Min. 8 characters"
                             class="w-full pl-10 pr-10 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition" />
+                    <%-- Toggle visibility --%>
                     <button type="button" onclick="togglePassword()"
                             class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                         <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
@@ -98,26 +125,40 @@
                         </svg>
                     </button>
                 </div>
+
+                <%-- Password strength bar --%>
+                <div class="mt-2">
+                    <div class="flex gap-1 mb-1">
+                        <div id="bar1" class="h-1 flex-1 rounded-full bg-gray-200 transition-colors duration-300"></div>
+                        <div id="bar2" class="h-1 flex-1 rounded-full bg-gray-200 transition-colors duration-300"></div>
+                        <div id="bar3" class="h-1 flex-1 rounded-full bg-gray-200 transition-colors duration-300"></div>
+                        <div id="bar4" class="h-1 flex-1 rounded-full bg-gray-200 transition-colors duration-300"></div>
+                    </div>
+                    <p id="strength-label" class="text-xs text-gray-400"></p>
+                </div>
             </div>
 
-            <%-- Remember me --%>
-            <div class="flex items-center gap-2">
-                <input type="checkbox" id="rememberMe" name="rememberMe" value="true"
-                       class="w-4 h-4 accent-indigo-600 cursor-pointer" />
-                <label for="rememberMe" class="text-sm text-gray-600 cursor-pointer select-none">
-                    Keep me logged in
+            <%-- Terms --%>
+            <div class="flex items-start gap-2">
+                <input type="checkbox" id="terms" required
+                       class="mt-0.5 w-4 h-4 accent-indigo-600 cursor-pointer" />
+                <label for="terms" class="text-xs text-gray-500 cursor-pointer">
+                    I agree to the
+                    <a href="#" class="text-indigo-600 hover:underline">Terms of Service</a>
+                    and
+                    <a href="#" class="text-indigo-600 hover:underline">Privacy Policy</a>
                 </label>
             </div>
 
             <%-- Submit --%>
             <button type="submit"
                     class="w-full bg-indigo-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 active:scale-95 transition duration-200">
-                Sign in
+                Create Account
             </button>
 
             <p class="text-center text-gray-500 text-sm">
-                Don't have an account?
-                <a href="register" class="text-indigo-600 font-medium hover:underline">Create one</a>
+                Already have an account?
+                <a href="login" class="text-indigo-600 font-medium hover:underline">Sign in</a>
             </p>
 
         </form>
@@ -136,6 +177,33 @@
             : `<path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`;
     }
+
+    document.getElementById('password').addEventListener('input', function () {
+        const val    = this.value;
+        const bars   = [1,2,3,4].map(i => document.getElementById('bar' + i));
+        const label  = document.getElementById('strength-label');
+
+        let score = 0;
+        if (val.length >= 8)              score++;
+        if (/[A-Z]/.test(val))            score++;
+        if (/[0-9]/.test(val))            score++;
+        if (/[^A-Za-z0-9]/.test(val))     score++;
+
+        const colors = ['bg-red-400', 'bg-orange-400', 'bg-yellow-400', 'bg-green-500'];
+        const labels = ['', 'Weak', 'Fair', 'Good', 'Strong'];
+
+        bars.forEach((bar, i) => {
+            bar.className = 'h-1 flex-1 rounded-full transition-colors duration-300 ' +
+                (i < score ? colors[score - 1] : 'bg-gray-200');
+        });
+
+        label.textContent = val.length ? labels[score] : '';
+        label.className   = 'text-xs transition-colors duration-300 ' + (
+            score <= 1 ? 'text-red-400' :
+                score === 2 ? 'text-orange-400' :
+                    score === 3 ? 'text-yellow-500' : 'text-green-500'
+        );
+    });
 </script>
 
 </body>

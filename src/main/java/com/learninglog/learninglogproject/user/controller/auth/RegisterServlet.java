@@ -17,6 +17,11 @@ import org.mindrot.jbcrypt.BCrypt;
 public class RegisterServlet extends HttpServlet {
 
     @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.getRequestDispatcher("register.jsp").forward(req,resp);
+    }
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
@@ -29,7 +34,7 @@ public class RegisterServlet extends HttpServlet {
                 password == null || password.trim().isEmpty()) {
 
             request.setAttribute("error", "Please fill all the fields");
-            request.getRequestDispatcher("index.jsp")
+            request.getRequestDispatcher("register.jsp")
                     .forward(request, response);
             return;
         }
