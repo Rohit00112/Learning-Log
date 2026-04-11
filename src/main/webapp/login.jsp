@@ -44,6 +44,19 @@
                     class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </div>
 
+        <!-- Keep me logged in -->
+        <div class="flex items-center gap-2">
+            <input
+                    type="checkbox"
+                    id="rememberMe"
+                    name="rememberMe"
+                    value="true"
+                    class="w-4 h-4 accent-indigo-600 cursor-pointer" />
+            <label for="rememberMe" class="text-gray-600 text-sm cursor-pointer select-none">
+                Keep me logged in
+            </label>
+        </div>
+
         <button
                 type="submit"
                 class="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition duration-200">

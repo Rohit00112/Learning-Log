@@ -11,6 +11,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.mindrot.jbcrypt.BCrypt;
 
 @WebServlet(name = "register", value = "/register")
 public class RegisterServlet extends HttpServlet {
@@ -33,7 +34,9 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
-        User user = new User(username.trim(), email.trim(), password);
+        String hashedPassword = BCrypt.hashpw(password,BCrypt.gensalt(12));
+
+        User user = new User(username.trim(), email.trim(), hashedPassword);
 
         try {
             UserDAOImpl userDAO = new UserDAOImpl();

@@ -60,4 +60,27 @@ public class UserDAOImpl implements UserDAOInterface {
             }
         }
     }
+
+    public User getUserByEmail(String email) throws SQLException, ClassNotFoundException {
+        String sql = "SELECT * FROM users WHERE email = ?";
+        User user = null;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, email);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    user = new User();
+                    user.setId(rs.getInt("id"));
+                    user.setUsername(rs.getString("username"));
+                    user.setEmail(rs.getString("email"));
+                    user.setPassword(rs.getString("password")); // hashed password
+                }
+            }
+        }
+
+        return user;
+    }
 }
