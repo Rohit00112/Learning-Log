@@ -1,15 +1,14 @@
 package com.learninglog.learninglogproject.user.controller.auth;
 
-import java.io.IOException;
-import java.sql.SQLException;
-
 import com.learninglog.learninglogproject.user.dao.impl.UserDAOImpl;
 import com.learninglog.learninglogproject.user.model.User;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import org.mindrot.jbcrypt.BCrypt;
+
+import java.io.IOException;
+import java.sql.SQLException;
 
 @WebServlet(name = "login", value = "/login")
 public class LoginServlet extends HttpServlet {
